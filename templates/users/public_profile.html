@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ user_obj.username }} Profile</title>
+</head>
+<body>
+
+<h2>{{ user_obj.username }}</h2>
+
+<p><strong>Bio:</strong> {{ user_obj.bio }}</p>
+
+<p>
+    Followers: {{ user_obj.followers_count }} |
+    Following: {{ user_obj.following_count }}
+</p>
+
+{% if user.is_authenticated %}
+
+    {% if not is_self %}
+        {% if is_following %}
+            <a href="{% url 'unfollow-user' user_obj.id %}">Unfollow</a>
+        {% else %}
+            <a href="{% url 'follow-user' user_obj.id %}">Follow</a>
+        {% endif %}
+    {% else %}
+        <a href="{% url 'edit-profile' %}">Edit Profile</a>
+        <a href="{% url 'enable-2fa' %}">Enable 2FA</a>
+        <a href="{% url 'logout' %}">Logout</a>
+    {% endif %}
+
+{% endif %}
+
+</body>
+</html>

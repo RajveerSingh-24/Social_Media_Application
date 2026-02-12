@@ -1,0 +1,7 @@
+<h2>Resend Activation Email</h2>
+
+<form method="POST">
+    {% csrf_token %}
+    <input type="email" name="email" placeholder="Enter your email" required>
+    <button type="submit">Resend</button>
+</form>

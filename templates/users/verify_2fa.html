@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Verify 2FA</title>
+</head>
+<body>
+
+<h2>Verify Two-Factor Authentication</h2>
+
+{% if messages %}
+    {% for message in messages %}
+        <p style="color:red;">{{ message }}</p>
+    {% endfor %}
+{% endif %}
+
+<form method="POST">
+    {% csrf_token %}
+    <label>Enter 6-digit OTP:</label>
+    <input type="text" name="otp" required>
+    <button type="submit">Verify</button>
+</form>
+
+</body>
+</html>
