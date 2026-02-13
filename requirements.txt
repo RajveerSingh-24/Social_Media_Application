@@ -1,0 +1,7 @@
+Django==5.2.11
+python-dotenv==1.0.1
+mysqlclient==2.2.4
+django-axes==6.1.0
+pyotp==2.9.0
+qrcode==7.4.2
+Pillow==10.4.0
