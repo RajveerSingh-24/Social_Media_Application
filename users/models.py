@@ -5,7 +5,7 @@ import pyotp
 
 # Create your models here.
 class User(AbstractUser):
-    email = models.EmailField(unique=True,required=True)
+    email = models.EmailField(unique=True)
     bio = models.TextField(blank=True, null=True)
     profile_picture = models.ImageField(
         upload_to='profile_pics/',
