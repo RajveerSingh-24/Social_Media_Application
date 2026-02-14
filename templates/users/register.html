@@ -1,9 +1,47 @@
-<h2>Register</h2>
+{% extends "base.html" %}
+{% block content %}
 
-<form method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Sign Up</button>
-</form>
+<div class="auth-wrapper">
+    <div class="auth-card">
 
-<a href="{% url 'login' %}">Already have an account?</a>
+        <div class="auth-logo">Synapse</div>
+
+        <form method="POST" novalidate>
+            {% csrf_token %}
+
+            {{ form.username }}
+            {% for error in form.username.errors %}
+                <div class="message-error">{{ error }}</div>
+            {% endfor %}
+
+            {{ form.email }}
+            {% for error in form.email.errors %}
+                <div class="message-error">{{ error }}</div>
+            {% endfor %}
+
+            {{ form.password1 }}
+            {% for error in form.password1.errors %}
+                <div class="message-error">{{ error }}</div>
+            {% endfor %}
+
+            {{ form.password2 }}
+            {% for error in form.password2.errors %}
+                <div class="message-error">{{ error }}</div>
+            {% endfor %}
+
+            {% for error in form.non_field_errors %}
+                <div class="message-error">{{ error }}</div>
+            {% endfor %}
+
+            <button type="submit">Create Account</button>
+        </form>
+
+        <div class="auth-footer">
+            Already have an account?
+            <a href="{% url 'login' %}">Log In</a>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

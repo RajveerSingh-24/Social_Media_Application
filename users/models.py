@@ -12,9 +12,11 @@ class User(AbstractUser):
 >>>>>>> e5dec9e (Updated models.py)
     bio = models.TextField(blank=True, null=True)
     profile_picture = models.ImageField(
-        upload_to='profile_pics/',
-        default='profile_pics/default.png'
-    )
+    upload_to='profile_pics/',
+    blank=True,
+    null=True
+)
+
 
     following = models.ManyToManyField(
         'self',
