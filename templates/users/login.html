@@ -1,32 +1,87 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Login</title>
-</head>
-<body>
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
 
-<h2>Login</h2>
+{% block content %}
 
-{% if messages %}
-    {% for message in messages %}
-        <p style="color:red;">{{ message }}</p>
-    {% endfor %}
+{% if show_logout_popup %}
+<div class="logout-modal" id="logoutModal">
+    <div class="logout-box">
+        <div class="logout-icon">✓</div>
+        <h3>Logged out successfully</h3>
+        <p>You have been securely logged out.</p>
+        <button onclick="closeLogoutModal()">Log In Again</button>
+    </div>
+</div>
 {% endif %}
 
+<div class="auth-wrapper">
+    <div class="auth-card">
 
-<form method="POST">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Login</button>
-</form>
+        <div class="auth-logo">Synapse</div>
 
-<p>
-    <a href="{% url 'password-reset' %}">Forgot Password?</a>
-</p>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="message-error">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
 
-<p>
-    <a href="{% url 'signup' %}">Create Account</a>
-</p>
+        <form method="POST" autocomplete="off">
+            {% csrf_token %}
 
-</body>
-</html>
+            {{ form.username }}
+            {{ form.password }}
+
+            <button type="submit">Log In</button>
+        </form>
+
+        <div class="auth-footer">
+            <p>
+                Don’t have an account?
+                <a href="{% url 'signup' %}">Sign Up</a>
+            </p>
+
+            <p style="margin-top:8px;">
+                <a href="{% url 'password-reset' %}">
+                    Forgot password?
+                </a>
+            </p>
+
+            <p style="margin-top: 8px;">
+                Didn’t receive activation email?
+                <a href="{% url 'resend-activation' %}">Resend</a>
+            </p>
+        </div>
+
+    </div>
+</div>
+
+{% if show_logout_popup %}
+<script>
+const modal = document.getElementById("logoutModal");
+
+function closeLogoutModal() {
+    modal.style.opacity = "0";
+    setTimeout(() => {
+        modal.style.display = "none";
+    }, 200);
+}
+
+// Close when clicking outside the box
+modal.addEventListener("click", function(e) {
+    if (e.target === modal) {
+        closeLogoutModal();
+    }
+});
+
+// Close on ESC key
+document.addEventListener("keydown", function(e) {
+    if (e.key === "Escape") {
+        closeLogoutModal();
+    }
+});
+</script>
+{% endif %}
+
+{% endblock %}

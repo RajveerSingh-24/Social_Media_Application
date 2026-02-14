@@ -1,34 +1,136 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>{{ user_obj.username }} Profile</title>
-</head>
-<body>
+{% extends "base.html" %}
+{% block title %}{{ user_obj.username }}{% endblock %}
 
-<h2>{{ user_obj.username }}</h2>
+{% block content %}
+<div class="profile-wrapper">
 
-<p><strong>Bio:</strong> {{ user_obj.bio }}</p>
+    <div class="profile-card">
 
-<p>
-    Followers: {{ user_obj.followers_count }} |
-    Following: {{ user_obj.following_count }}
-</p>
+        <!-- HEADER -->
+        <div class="profile-header">
 
-{% if user.is_authenticated %}
+            <!-- Avatar -->
+            <div class="profile-avatar">
+                {% if user_obj.profile_picture %}
+                <img src="{{ user_obj.profile_picture.url }}" alt="Profile Picture">
+                {% else %}
+                <div class="avatar-placeholder"></div>
+                {% endif %}
+            </div>
 
-    {% if not is_self %}
-        {% if is_following %}
-            <a href="{% url 'unfollow-user' user_obj.id %}">Unfollow</a>
-        {% else %}
-            <a href="{% url 'follow-user' user_obj.id %}">Follow</a>
-        {% endif %}
-    {% else %}
-        <a href="{% url 'edit-profile' %}">Edit Profile</a>
-        <a href="{% url 'enable-2fa' %}">Enable 2FA</a>
-        <a href="{% url 'logout' %}">Logout</a>
-    {% endif %}
 
-{% endif %}
+            <!-- Info -->
+            <div class="profile-info">
 
-</body>
-</html>
+                <div class="profile-top">
+                    <h2>
+                        {{ user_obj.username }}
+                        {% if user_obj.is_verified %}
+                        <span class="verified-badge">✔</span>
+                        {% endif %}
+                    </h2>
+
+                    {% if user.is_authenticated %}
+                    {% if not is_self %}
+                    {% if is_following %}
+                    <a href="{% url 'unfollow-user' user_obj.id %}" class="btn secondary">
+                        Unfollow
+                    </a>
+                    {% else %}
+                    <a href="{% url 'follow-user' user_obj.id %}" class="btn primary">
+                        Follow
+                    </a>
+                    {% endif %}
+                    {% else %}
+                    <a href="{% url 'edit-profile' %}" class="btn secondary">Edit Profile</a>
+                    <a href="{% url 'logout' %}" class="btn danger">Logout</a>
+                    {% endif %}
+                    {% endif %}
+                </div>
+
+                <!-- Stats -->
+                <div class="profile-stats">
+                    <div>
+                        <strong>24</strong>
+                        <span>Posts</span>
+                    </div>
+
+                    <div onclick="openFollowers()" class="clickable">
+                        <strong>{{ user_obj.followers_count }}</strong>
+                        <span>Followers</span>
+                    </div>
+
+                    <div onclick="openFollowing()" class="clickable">
+                        <strong>{{ user_obj.following_count }}</strong>
+                        <span>Following</span>
+                    </div>
+                </div>
+
+                <div class="profile-bio">
+                    {{ user_obj.bio|default:"No bio yet." }}
+                </div>
+
+            </div>
+        </div>
+
+        <!-- TABS -->
+        <div class="profile-tabs">
+            <button class="tab active" onclick="switchTab('posts')">Posts</button>
+            <button class="tab" onclick="switchTab('saved')">Saved</button>
+            <button class="tab" onclick="switchTab('tagged')">Tagged</button>
+        </div>
+
+        <!-- POSTS GRID -->
+        <div id="posts" class="tab-content active">
+            <div class="posts-grid">
+                {% for i in "123456789" %}
+                <div class="post-item"></div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div id="saved" class="tab-content">
+            <p class="empty-text">No saved posts yet.</p>
+        </div>
+
+        <div id="tagged" class="tab-content">
+            <p class="empty-text">No tagged posts.</p>
+        </div>
+
+    </div>
+</div>
+
+
+<!-- FOLLOWERS MODAL -->
+<div id="followersModal" class="modal">
+    <div class="modal-content">
+        <h3>Followers</h3>
+        <p>Follower list will go here.</p>
+        <button onclick="closeModal()">Close</button>
+    </div>
+</div>
+
+
+<script>
+    function switchTab(tabId) {
+        document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
+        document.querySelectorAll(".tab-content").forEach(content => content.classList.remove("active"));
+
+        document.getElementById(tabId).classList.add("active");
+        event.target.classList.add("active");
+    }
+
+    function openFollowers() {
+        document.getElementById("followersModal").classList.add("show");
+    }
+
+    function openFollowing() {
+        document.getElementById("followersModal").classList.add("show");
+    }
+
+    function closeModal() {
+        document.getElementById("followersModal").classList.remove("show");
+    }
+</script>
+
+{% endblock %}

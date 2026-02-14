@@ -1,24 +1,41 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Verify 2FA</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-<h2>Verify Two-Factor Authentication</h2>
+{% block content %}
 
-{% if messages %}
-    {% for message in messages %}
-        <p style="color:red;">{{ message }}</p>
-    {% endfor %}
-{% endif %}
+<div class="auth-wrapper">
+    <div class="auth-card">
 
-<form method="POST">
-    {% csrf_token %}
-    <label>Enter 6-digit OTP:</label>
-    <input type="text" name="otp" required>
-    <button type="submit">Verify</button>
-</form>
+        <div class="auth-logo">Enable 2FA</div>
 
-</body>
-</html>
+        <h3 style="margin-bottom:20px; text-align:center;">
+            Scan QR & Verify
+        </h3>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="message-error">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <input 
+                type="text" 
+                name="otp" 
+                placeholder="Enter 6-digit code"
+                maxlength="6"
+                required
+            >
+
+            <button type="submit">
+                Confirm
+            </button>
+        </form>
+
+    </div>
+</div>
+
+{% endblock %}

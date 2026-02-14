@@ -8,9 +8,11 @@ class User(AbstractUser):
     email = models.EmailField(unique=True,)
     bio = models.TextField(blank=True, null=True)
     profile_picture = models.ImageField(
-        upload_to='profile_pics/',
-        default='profile_pics/default.png'
-    )
+    upload_to='profile_pics/',
+    blank=True,
+    null=True
+)
+
 
     following = models.ManyToManyField(
         'self',

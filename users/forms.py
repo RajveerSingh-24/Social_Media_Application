@@ -10,14 +10,43 @@ class RegisterForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'bio', 'profile_picture', 'password1', 'password2']
+        fields = ['username', 'email', 'password1', 'password2']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['username'].widget.attrs.update({
+            'placeholder': 'Username'
+        })
+
+        self.fields['email'].widget.attrs.update({
+            'placeholder': 'Email' 
+        })
+
+        self.fields['password1'].widget.attrs.update({
+            'placeholder': 'Password'
+        })
+
+        self.fields['password2'].widget.attrs.update({
+            'placeholder': 'Confirm Password'
+        })
+
     
     def clean_email(self):
         return self.cleaned_data['email'].lower()
 
 class LoginForm(forms.Form):
-    username = forms.CharField(label="Username or Email")
-    password = forms.CharField(widget=forms.PasswordInput)
+    username = forms.CharField(
+        widget=forms.TextInput(attrs={
+            'placeholder': 'Username or Email'
+        })
+    )
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={
+            'placeholder': 'Password'
+        })
+    )
+
 
 class ProfileUpdateForm(forms.ModelForm):
     class Meta:

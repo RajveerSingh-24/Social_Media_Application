@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block title %}Edit Profile{% endblock %}
+
+{% block content %}
+<div class="profile-edit-wrapper">
+
+    <div class="profile-edit-card">
+
+        <h2 class="edit-title">Edit Profile</h2>
+
+        <form method="POST" enctype="multipart/form-data" class="edit-form">
+            {% csrf_token %}
+
+            <!-- Profile Picture -->
+            <div class="edit-avatar-section">
+
+                <div class="avatar-preview">
+                    {% if user.profile_picture %}
+                    <img src="{{ user.profile_picture.url }}" id="previewImage">
+                    {% else %}
+                    <div class="avatar-placeholder-large">
+                        {{ user.username|first|upper }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Custom Upload Button -->
+                <label for="profilePicInput" class="upload-btn">
+                    Change Profile Photo
+                </label>
+
+                <!-- Real file input hidden -->
+                <input type="file" name="profile_picture" id="profilePicInput" accept="image/*" hidden>
+
+            </div>
+
+
+
+
+            <!-- Crop Modal -->
+            <div id="cropModal" class="crop-modal">
+                <div class="crop-container">
+                    <img id="cropImage">
+                    <div class="crop-actions">
+                        <button type="button" onclick="applyCrop()">Save</button>
+                        <button type="button" onclick="closeCrop()">Cancel</button>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Username -->
+            <div class="form-group">
+                <label>Username</label>
+                {{ form.username }}
+            </div>
+
+            <!-- Email -->
+            <div class="form-group">
+                <label>Email</label>
+                {{ form.email }}
+            </div>
+
+            <!-- Bio -->
+            <div class="form-group">
+                <label>Bio</label>
+                {{ form.bio }}
+            </div>
+
+            <div class="edit-actions">
+                <button type="submit" class="btn primary">Save Changes</button>
+                <a href="{% url 'user-profile' user.username %}" class="btn secondary">
+                    Cancel
+                </a>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+<script>
+document.getElementById("profilePicInput").addEventListener("change", function (e) {
+
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function () {
+
+        let img = document.getElementById("previewImage");
+
+        if (!img) {
+            img = document.createElement("img");
+            img.id = "previewImage";
+            document.querySelector(".avatar-preview").innerHTML = "";
+            document.querySelector(".avatar-preview").appendChild(img);
+        }
+
+        img.src = reader.result;
+    };
+
+    reader.readAsDataURL(file);
+});
+</script>
+
+
+
+{% endblock %}
