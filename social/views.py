@@ -17,7 +17,8 @@ def follow_user(request, username):
             following=user_to_follow
         )
 
-    return redirect('social:feed')
+    # ✅ redirect to feed (safe, always exists)
+    return redirect('feed')
 
 
 @login_required
@@ -29,7 +30,8 @@ def unfollow_user(request, username):
         following=user_to_unfollow
     ).delete()
 
-    return redirect('social:feed')
+    # ✅ redirect to feed
+    return redirect('feed')
 
 
 @login_required

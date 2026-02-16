@@ -27,8 +27,10 @@ urlpatterns = [
     # Authentication routes
     path('accounts/', include('users.urls')),
 
-    # Public profiles (must come AFTER accounts/)
-    # path('', include('users.profile_urls')),
+    # Social app (MUST come before <str:username>)
+    path('social/', include('social.urls')),
+
+    # Public profiles (KEEP THIS LAST)
     path('<str:username>/', public_profile_view, name='user-profile'),
 ]
 

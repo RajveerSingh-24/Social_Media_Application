@@ -5,16 +5,12 @@ import pyotp
 
 # Create your models here.
 class User(AbstractUser):
-<<<<<<< HEAD
     email = models.EmailField(unique=True)
-=======
-    email = models.EmailField(unique=True,)
->>>>>>> e5dec9e (Updated models.py)
     bio = models.TextField(blank=True, null=True)
     profile_picture = models.ImageField(
     upload_to='profile_pics/',
     blank=True,
-    null=True
+    null=True,
 )
 
 
