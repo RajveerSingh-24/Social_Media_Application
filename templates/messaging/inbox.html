@@ -1,0 +1,79 @@
+{% load static %}
+<html>
+    <head>
+       <link rel="stylesheet" href="{% static 'css/messages.css' %}">
+       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    </head>
+<body>
+<div class="messages-layout">
+
+    <!-- ICON SIDEBAR -->
+    <div class="icon-sidebar">
+        <a href="/"><i class="fa-solid fa-house"></i></a>
+        <a href="/messages/"><i class="fa-regular fa-paper-plane"></i></a>
+         <a href="#" title="Search">
+            <i class="fa-solid fa-magnifying-glass"></i>
+        </a>
+        <a href="#" title="Create">
+            <i class="fa-regular fa-square-plus"></i>
+        </a>
+        <a href="{% url 'user-profile' request.user.username %}">{% if user.profile_picture %}
+            <img src="{{ user.profile_picture.url }}" class="chat-avatar">
+        {% else %}
+            <img src="{% static 'images/default-avatar.png' %}" class="chat-avatar">
+        {% endif %}</a>
+
+    </div>
+
+
+    <!-- CONVERSATION LIST -->
+    <div class="conversation-list">
+
+        <div class="conversation-header">
+            {{ request.user.username }}
+        </div>
+        <div class="msg">
+            <h4>Messages</h4>
+        </div>
+        {% for convo in conversations %}
+            {% for user in convo.participants.all %}
+                {% if user != request.user %}
+                    <a href="{% url 'chat' user.username %}" style="text-decoration:none;color:white;">
+                        <div class="convo-item">
+
+                            <div class="convo-avatar">
+                                {% if user.profile_picture %}
+                                    <img src="{{ user.profile_picture.url }}" alt="profile">
+                                {% else %}
+                                    <img src="{% static 'images/default-avatar.png' %}" alt="profile">
+                                {% endif %}
+                            </div>
+
+                            <div class="convo-info">
+                                {{ user.username }}
+                            </div>
+
+                        </div>
+
+                    </a>
+                {% endif %}
+            {% endfor %}
+        {% empty %}
+            <p style="padding:20px;">No conversations yet.</p>
+        {% endfor %}
+
+    </div>
+
+
+    <!-- EMPTY CHAT AREA -->
+    <div class="chat-window">
+        <div class="messages-area"
+             style="display:flex;align-items:center;justify-content:center;">
+             <i class="fa-solid fa-paper-plane"></i>
+            <h2>Select a conversation</h2>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

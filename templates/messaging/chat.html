@@ -1,0 +1,237 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/messages.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/emoji-picker-element@1/index.js" type="module"></script>
+
+<div class="messages-layout">
+
+    <!-- ICON SIDEBAR -->
+    <div class="icon-sidebar">
+        <a href="/"><i class="fa-solid fa-house"></i></a>
+        <a href="/messages/"><i class="fa-regular fa-paper-plane"></i></a>
+         <a href="#" title="Search">
+            <i class="fa-solid fa-magnifying-glass"></i>
+        </a>
+        <a href="#" title="Create">
+            <i class="fa-regular fa-square-plus"></i>
+        </a>
+        <a href="{% url 'user-profile' request.user.username %}"> {% if user.profile_picture %}
+            <img src="{{ user.profile_picture.url }}" class="chat-avatar">
+        {% else %}
+            <img src="{% static 'images/default-avatar.png' %}" class="chat-avatar">
+        {% endif %}</a>
+
+    </div>
+
+
+
+    <!-- CONVERSATION LIST -->
+<div class="conversation-list">
+
+    <div class="conversation-header">
+        {{ request.user.username }}
+    </div>
+
+    {% with active_found=False %}
+
+        {% for convo in conversations %}
+            {% for user in convo.participants.all %}
+                {% if user != request.user %}
+
+                    {% if user.username == other_user.username %}
+                        {% with True as active_found %}{% endwith %}
+                    {% endif %}
+
+                    <a href="{% url 'chat' user.username %}" style="text-decoration:none;color:white;">
+                        <div class="convo-item
+                            {% if user.username == other_user.username %}
+                                active
+                            {% endif %}
+                        ">
+
+                            <div class="convo-avatar">
+                                {% if user.profile_picture %}
+                                    <img src="{{ user.profile_picture.url }}">
+                                {% else %}
+                                    <img src="{% static 'images/default-avatar.png' %}">
+                                {% endif %}
+                            </div>
+
+                            <div class="convo-info">
+                                {{ user.username }}
+                            </div>
+
+                        </div>
+                    </a>
+
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+
+        <!-- ADD ACTIVE USER IF NOT IN LIST -->
+        {% if other_user %}
+            <a href="{% url 'chat' other_user.username %}" style="text-decoration:none;color:white;">
+                <div class="convo-item active">
+
+                    <div class="convo-avatar">
+                        {% if other_user.profile_picture %}
+                            <img src="{{ other_user.profile_picture.url }}">
+                        {% else %}
+                            <img src="{% static 'images/default-avatar.png' %}">
+                        {% endif %}
+                    </div>
+
+                    <div class="convo-info">
+                        {{ other_user.username }}
+                    </div>
+
+                </div>
+            </a>
+        {% endif %}
+
+    {% endwith %}
+
+</div>
+
+
+
+    <!-- CHAT WINDOW -->
+    <div class="chat-window">
+
+        <div class="chat-header">
+
+    <div class="chat-user">
+
+        {% if other_user.profile_picture %}
+            <img src="{{ other_user.profile_picture.url }}" class="chat-avatar">
+        {% else %}
+            <img src="{% static 'images/default-avatar.png' %}" class="chat-avatar">
+        {% endif %}
+
+        <span>{{ other_user.username }}</span>
+
+    </div>
+
+</div>
+
+
+        <div class="messages-area">
+
+            {% for message in messages %}
+                <div class="message-wrapper
+                    {% if message.sender == request.user %}
+                        sent-wrapper
+                    {% else %}
+                        received-wrapper
+                    {% endif %}
+                ">
+
+                    <div class="message
+                        {% if message.sender == request.user %}
+                            sent
+                        {% else %}
+                            received
+                        {% endif %}
+                    ">
+                        
+                        {% if message.content %}
+                            <div>{{ message.content }}</div>
+                        {% endif %}
+
+                        {% if message.image %}
+                                <img src="{{ message.image.url }}"
+                                class="chat-image preview-image"
+                                onclick="openImage('{{ message.image.url }}')">
+
+                         {% endif %}
+                    </div>
+
+                    <div class="message-time">
+                        {{ message.timestamp|date:"h:i A" }}
+                    </div>
+
+                </div>
+            {% endfor %}
+        </div>
+
+<div class="message-input">
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <button type="button" id="emoji-btn">
+            <i class="fa-regular fa-face-smile"></i>
+        </button>
+        
+        <label for="image-upload" class="image-btn">
+            <i class="fa-regular fa-image"></i>
+        </label>
+
+        <input type="file"
+       id="image-upload"
+       name="image"
+       accept="image/*"
+       hidden>
+
+        <input id="message-field"
+               type="text"
+               name="content"
+               placeholder="Message..."
+              >
+
+        <button type="submit">
+            <i class="fa-regular fa-paper-plane"></i>
+        </button>
+    </form>
+
+    <emoji-picker id="emoji-picker"></emoji-picker>
+</div>
+
+
+    </div>
+
+</div>
+
+<script>
+    const messagesArea = document.querySelector(".messages-area");
+    if (messagesArea) {
+        messagesArea.scrollTop = messagesArea.scrollHeight;
+    }
+</script>
+
+<script>
+const picker = document.querySelector("#emoji-picker");
+const button = document.querySelector("#emoji-btn");
+const input = document.querySelector("#message-field");
+
+picker.style.display = "none";
+
+button.addEventListener("click", () => {
+    picker.style.display =
+        picker.style.display === "none" ? "block" : "none";
+});
+
+picker.addEventListener("emoji-click", event => {
+    input.value += event.detail.unicode;
+});
+</script>
+
+<div id="image-modal" class="image-modal" onclick="closeImage()">
+    <img id="modal-image">
+</div>
+
+<script>
+function openImage(src) {
+    const modal = document.getElementById("image-modal");
+    const modalImg = document.getElementById("modal-image");
+
+    modal.style.display = "flex";
+    modalImg.src = src;
+}
+
+function closeImage() {
+    document.getElementById("image-modal").style.display = "none";
+}
+
+document.addEventListener("keydown", e => {
+    if (e.key === "Escape") closeImage();});
+</script>

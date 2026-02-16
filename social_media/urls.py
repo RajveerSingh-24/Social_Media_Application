@@ -23,13 +23,10 @@ from users.views import public_profile_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-
-    # Authentication routes
+    # Authentication routes 
     path('accounts/', include('users.urls')),
-
-    # Public profiles (must come AFTER accounts/)
-    # path('', include('users.profile_urls')),
-    path('<str:username>/', public_profile_view, name='user-profile'),
+    path('messages/', include('messaging.urls')),
+    path('u/<str:username>/', public_profile_view, name='user-profile'),
 ]
 
 # Media files (development only)

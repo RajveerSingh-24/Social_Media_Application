@@ -346,4 +346,3 @@ def resend_activation(request):
         return redirect('login')
 
     return render(request, "users/resend_activation.html")
-

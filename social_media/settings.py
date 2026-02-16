@@ -8,7 +8,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # ---------------- SECURITY ----------------
 
-SECRET_KEY = os.getenv("SECRET_KEY")
+SECRET_KEY = "ejsbqvvf5e3m44_vc^b@2bkaykxghv2=(esz$g7@tuerofsha@"
 
 DEBUG = os.getenv("DEBUG", "True") == "True"
 
@@ -26,6 +26,7 @@ INSTALLED_APPS = [
 
     'users',
     'axes',
+    'messaging',
 ]
 
 AUTH_USER_MODEL = 'users.User'
@@ -136,7 +137,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # ---------------- INTERNATIONALIZATION ----------------
 
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kolkata'
 USE_I18N = True
 USE_TZ = True
 
