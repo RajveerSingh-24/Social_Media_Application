@@ -6,22 +6,7 @@
 <div class="messages-layout">
 
     <!-- ICON SIDEBAR -->
-    <div class="icon-sidebar">
-        <a href="/"><i class="fa-solid fa-house"></i></a>
-        <a href="/messages/"><i class="fa-regular fa-paper-plane"></i></a>
-         <a href="#" title="Search">
-            <i class="fa-solid fa-magnifying-glass"></i>
-        </a>
-        <a href="#" title="Create">
-            <i class="fa-regular fa-square-plus"></i>
-        </a>
-        <a href="{% url 'user-profile' request.user.username %}"> {% if user.profile_picture %}
-            <img src="{{ user.profile_picture.url }}" class="chat-avatar">
-        {% else %}
-            <img src="{% static 'images/default-avatar.png' %}" class="chat-avatar">
-        {% endif %}</a>
-
-    </div>
+    {% include "includes/icon_sidebar.html" %}
 
 
 

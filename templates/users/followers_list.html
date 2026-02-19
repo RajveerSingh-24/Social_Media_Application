@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+
+<div class="follow-page">
+
+    <h2 class="follow-title">
+        {{ user_obj.username }} — {{ title }}
+    </h2>
+
+    <div class="follow-list">
+
+        {% for u in users %}
+        <div class="follow-item">
+
+            <!-- Avatar -->
+            <a href="{% url 'user-profile' u.username %}" class="follow-avatar">
+                <img src="{{ u.profile_picture.url }}" />
+            </a>
+
+            <!-- User Info -->
+            <div class="follow-info">
+                <a href="{% url 'user-profile' u.username %}" class="username">
+                    {{ u.username }}
+                </a>
+
+                <p class="bio">
+                    {{ u.bio|truncatechars:40 }}
+                </p>
+            </div>
+
+            <!-- Follow Button -->
+            <div class="follow-action">
+
+                {% if request.user != u %}
+
+                    {% if u in request.user.following.all %}
+                        <a href="{% url 'unfollow-user' u.id %}" class="btn secondary">
+                            Unfollow
+                        </a>
+                    {% else %}
+                        <a href="{% url 'follow-user' u.id %}" class="btn primary">
+                            Follow
+                        </a>
+                    {% endif %}
+
+                {% endif %}
+
+            </div>
+
+        </div>
+        {% empty %}
+            <p class="empty-text">No users found.</p>
+        {% endfor %}
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -15,6 +15,13 @@ import qrcode
 from io import BytesIO
 import base64
 from django.core.files.base import ContentFile
+from django.db.models import Q, Exists, OuterRef
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from django.contrib.auth.models import User
+import json 
+from posts.models import Post
+
 
 from .forms import LoginForm, RegisterForm, ProfileUpdateForm
 from .models import Follow
@@ -25,32 +32,34 @@ User = get_user_model()
 # =========================================================
 # PUBLIC PROFILE
 # =========================================================
-
 def public_profile_view(request, username):
-    user_obj = get_object_or_404(
-        User.objects.annotate(
-            followers_count=Count('followers'),
-            following_count=Count('following')
-        ),
-        username__iexact=username
-    )
 
-    is_self = request.user == user_obj if request.user.is_authenticated else False
+    user_obj = get_object_or_404(User, username=username)
+
+    followers_count = Follow.objects.filter(following=user_obj).count()
+    following_count = Follow.objects.filter(follower=user_obj).count()
 
     is_following = False
-    if request.user.is_authenticated and not is_self:
+    if request.user.is_authenticated:
         is_following = Follow.objects.filter(
             follower=request.user,
             following=user_obj
         ).exists()
 
+    # Fetch posts
+    posts = Post.objects.filter(user=user_obj)
+
     context = {
-        'user_obj': user_obj,
-        'is_self': is_self,
-        'is_following': is_following,
+        "user_obj": user_obj, 
+        "followers_count": followers_count,
+        "following_count": following_count,
+        "is_following": is_following,
+        "posts": posts,
+        "is_self": request.user == user_obj,  
     }
 
-    return render(request, 'users/public_profile.html', context)
+    return render(request, "users/public_profile.html", context)
+
 
 
 # =========================================================
@@ -346,3 +355,65 @@ def resend_activation(request):
         return redirect('login')
 
     return render(request, "users/resend_activation.html")
+
+@login_required
+def followers_list(request, username):
+    user_obj = get_object_or_404(User, username__iexact=username)
+
+    followers = User.objects.filter(
+        following=user_obj
+    )
+
+    return render(request, "users/followers_list.html", {
+        "user_obj": user_obj,
+        "users": followers,
+        "title": "Followers"
+    })
+
+@login_required
+def following_list(request, username):
+    user_obj = get_object_or_404(User, username__iexact=username)
+
+    following = user_obj.following.all()
+
+    return render(request, "users/followers_list.html", {
+        "user_obj": user_obj,
+        "users": following,
+        "title": "Following"
+    })
+
+# =========================================================
+# USER SEARCH
+# =========================================================
+
+@login_required
+def user_search(request):
+    query = request.GET.get("q", "").strip()
+
+    results = []
+
+    if query:
+        # Subquery to check follow relationship efficiently
+        follow_subquery = Follow.objects.filter(
+            follower=request.user,
+            following=OuterRef("pk")
+        )
+
+        results = (
+    User.objects
+    .filter(username__icontains=query)
+    .exclude(id=request.user.id)
+    .annotate(
+        followers_total=Count("followers_set", distinct=True),
+        is_following=Exists(follow_subquery)
+    )
+    .order_by("username")[:25]
+)
+
+    context = {
+        "query": query,
+        "results": results,
+    }
+
+    return render(request, "users/search_results.html", context)
+

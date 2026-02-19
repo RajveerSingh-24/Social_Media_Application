@@ -1,0 +1,11 @@
+<h2>Your Feed</h2>
+
+{% for post in posts %}
+  <div>
+    <b>{{ post.user.username }}</b><br>
+    {{ post.caption }}
+    <hr>
+  </div>
+{% empty %}
+  <p>No posts to show</p>
+{% endfor %}

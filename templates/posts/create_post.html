@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Create Post{% endblock %}
+
+{% block content %}
+
+<header class="navbar">
+
+    <a href="/" class="brand">
+        <div class="brand-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 3c-3 0-5 2-5 4s2 4 5 4 5 2 5 4-2 4-5 4" />
+                <circle cx="8" cy="7" r="1.5" fill="currentColor" />
+                <circle cx="16" cy="17" r="1.5" fill="currentColor" />
+            </svg>
+        </div>
+        <span class="brand-name">Synapse</span>
+    </a>
+
+    <form action="{% url 'user-search' %}" method="GET" class="global-search">
+        <input
+            type="text"
+            name="q"
+            placeholder="Search users..."
+            value="{{ request.GET.q }}"
+            autocomplete="off">
+    </form>
+
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle Theme">
+        <i data-lucide="sun"></i>
+    </button>
+
+</header>
+
+
+<div class="app-layout">
+
+    <!-- ================= SIDEBAR ================= -->
+    <div class="icon-sidebar">
+
+        <a href="/"><i class="fa-solid fa-house"></i></a>
+
+        <a href="/messages/">
+            <i class="fa-regular fa-paper-plane"></i>
+        </a>
+
+        <a href="{% url 'user-search' %}">
+            <i class="fa-solid fa-magnifying-glass"></i>
+        </a>
+
+        <a href="{% url 'create-post' %}">
+            <i class="fa-regular fa-square-plus"></i>
+        </a>
+
+        <a href="{% url 'user-profile' request.user.username %}">
+            {% if request.user.profile_picture %}
+                <img src="{{ request.user.profile_picture.url }}" class="sidebar-avatar">
+            {% else %}
+                <div class="sidebar-avatar placeholder"></div>
+            {% endif %}
+        </a>
+
+    </div>
+
+
+    <!-- ================= MAIN ================= -->
+    <div class="main-content">
+
+        <div class="create-post-wrapper">
+
+            <div class="create-post-card">
+
+                <h2 class="create-title">Create new post</h2>
+
+                <form method="POST" enctype="multipart/form-data" class="create-form">
+                    {% csrf_token %}
+
+                    <!-- IMAGE -->
+                    <div class="form-group">
+
+                        <label class="upload-box" for="id_image">
+
+                            <!-- PREVIEW IMAGE -->
+                            <img id="image-preview" class="preview-image" />
+
+                        <!-- DEFAULT CONTENT -->
+                        <div id="upload-placeholder" class="upload-placeholder">
+                            <i class="fa-regular fa-image"></i>
+                            <span id="upload-text">Choose photo</span>
+                            <small>Click to upload</small>
+                        </div>
+
+                    </label>
+
+                    {{ form.image }}
+
+                </div>
+
+
+
+                    <!-- CAPTION -->
+                    <div class="form-group">
+                        {{ form.caption }}
+                    </div>
+
+                    <button type="submit" class="share-btn">
+                        <i class="fa-solid fa-arrow-up-from-bracket"></i>
+                        Share Post
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- <script>
+const fileInput = document.getElementById("id_image");
+const uploadText = document.getElementById("upload-text");
+
+fileInput.addEventListener("change", function () {
+    if (this.files.length > 0) {
+        uploadText.textContent = this.files[0].name;
+    }
+});
+</script> -->
+
+<script>
+const fileInput = document.getElementById("id_image");
+const previewImage = document.getElementById("image-preview");
+const placeholder = document.getElementById("upload-placeholder");
+
+fileInput.addEventListener("change", function () {
+
+    const file = this.files[0];
+
+    if (file) {
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+            previewImage.src = e.target.result;
+            previewImage.style.display = "block";
+            placeholder.style.display = "none";
+        };
+
+        reader.readAsDataURL(file);
+    }
+});
+</script>
+
+
+{% endblock %}

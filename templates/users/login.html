@@ -2,6 +2,26 @@
 {% block title %}Login{% endblock %}
 
 {% block content %}
+<header class="navbar">
+
+    <a href="/" class="brand">
+        <div class="brand-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 3c-3 0-5 2-5 4s2 4 5 4 5 2 5 4-2 4-5 4" />
+                <circle cx="8" cy="7" r="1.5" fill="currentColor" />
+                <circle cx="16" cy="17" r="1.5" fill="currentColor" />
+            </svg>
+        </div>
+        <span class="brand-name">Synapse</span>
+    </a>
+
+
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle Theme">
+        <i data-lucide="sun"></i>
+    </button>
+
+</header>
 
 {% if show_logout_popup %}
 <div class="logout-modal" id="logoutModal">

@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<header class="navbar">
+
+    <a href="/" class="brand">
+        <div class="brand-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 3c-3 0-5 2-5 4s2 4 5 4 5 2 5 4-2 4-5 4" />
+                <circle cx="8" cy="7" r="1.5" fill="currentColor" />
+                <circle cx="16" cy="17" r="1.5" fill="currentColor" />
+            </svg>
+        </div>
+        <span class="brand-name">Synapse</span>
+    </a>
+
+    <form action="{% url 'user-search' %}" method="GET" class="global-search">
+        <input
+            type="text"
+            name="q"
+            placeholder="Search users..."
+            value="{{ request.GET.q }}"
+            autocomplete="off">
+    </form>
+
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle Theme">
+        <i data-lucide="sun"></i>
+    </button>
+
+</header>
+    <!-- ================= SIDEBAR ================= -->
+    <div class="icon-sidebar">
+
+        <a href="/">
+            <i class="fa-solid fa-house"></i>
+        </a>
+
+        <a href="/messages/">
+            <i class="fa-regular fa-paper-plane"></i>
+        </a>
+
+        <a href="{% url 'user-search' %}">
+            <i class="fa-solid fa-magnifying-glass"></i>
+        </a>
+
+        <a href="{% url 'create-post' %}">
+            <i class="fa-regular fa-square-plus"></i>
+        </a>
+
+
+        <a href="{% url 'user-profile' request.user.username %}">
+            {% if request.user.profile_picture %}
+                <img src="{{ request.user.profile_picture.url }}" class="sidebar-avatar">
+            {% else %}
+                <div class="sidebar-avatar placeholder"></div>
+            {% endif %}
+        </a>
+
+    </div>
+
+<div class="feed-container">
+
+    {% for post in posts %}
+        <div class="feed-post">
+
+            <div class="feed-header">
+                <a href="{% url 'user-profile' post.user.username %}">
+                    <strong>{{ post.user.username }}</strong>
+                </a>
+            </div>
+
+            <div class="feed-image">
+                <a href="{% url 'post-detail' post.id %}">
+                    <img src="{{ post.image.url }}">
+                </a>
+            </div>
+
+            <div class="post-actions">
+
+              <button class="like-btn"
+                        data-post-id="{{ post.id }}"
+                        type="button">
+
+                    <i class="{% if post.is_liked %}
+                        fa-solid fa-heart liked
+                    {% else %}
+                        fa-regular fa-heart
+                    {% endif %}">
+                    </i>
+
+                </button>
+
+                <span class="like-count">
+                    {{ post.likes.count }}
+                </span>
+
+
+
+            </div>
+
+
+            {% if post.caption %}
+            <div class="feed-caption">
+                <strong>{{ post.user.username }}</strong>
+                {{ post.caption }}
+            </div>
+            {% endif %}
+
+        </div>
+
+    {% empty %}
+        <p class="empty-text">Follow users to see posts.</p>
+    {% endfor %}
+
+</div>
+
+<script>
+function toggleLike(button) {
+
+    const postId = button.dataset.postId;
+    const icon = button.querySelector("i");
+    const likeCountEl = button.nextElementSibling;
+
+    fetch(`/posts/like/${postId}/`, {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": "{{ csrf_token }}",
+            "Content-Type": "application/json"
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+
+        likeCountEl.innerText = data.likes_count;
+
+        if (data.liked) {
+            icon.classList.remove("fa-regular");
+            icon.classList.add("fa-solid", "liked");
+        } else {
+            icon.classList.remove("fa-solid", "liked");
+            icon.classList.add("fa-regular");
+        }
+    });
+}
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    document.querySelectorAll(".like-btn").forEach(button => {
+
+        button.addEventListener("click", function () {
+
+            const postId = this.dataset.postId;
+            const icon = this.querySelector("i");
+            const likeCountEl = this.nextElementSibling;
+
+            fetch(`/posts/${postId}/like/`, {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}",
+                    "X-Requested-With": "XMLHttpRequest",
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+
+                likeCountEl.innerText = data.likes_count;
+
+                if (data.liked) {
+                    icon.classList.remove("fa-regular");
+                    icon.classList.add("fa-solid", "liked");
+                } else {
+                    icon.classList.remove("fa-solid", "liked");
+                    icon.classList.add("fa-regular");
+                }
+
+            });
+
+        });
+
+    });
+
+});
+</script>
+
+
+{% endblock %}

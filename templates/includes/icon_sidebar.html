@@ -1,0 +1,27 @@
+{% load static %}
+
+<div class="icon-sidebar">
+    <a href="/">
+    <i class="fa-solid fa-house"></i>
+    </a>
+
+    <a href="/messages/">
+        <i class="fa-regular fa-paper-plane"></i>
+    </a>
+
+    <a href="{% url 'user-search' %}" title="Search">
+        <i class="fa-solid fa-magnifying-glass"></i>
+    </a>
+
+        <a href="{% url 'create-post' %}">
+            <i class="fa-regular fa-square-plus"></i>
+        </a>
+
+    <a href="{% url 'user-profile' request.user.username %}">
+        {% if request.user.profile_picture %}
+            <img src="{{ request.user.profile_picture.url }}" class="chat-avatar">
+        {% else %}
+            <img src="{% static 'images/default-avatar.png' %}" class="chat-avatar">
+        {% endif %}
+    </a>
+</div>

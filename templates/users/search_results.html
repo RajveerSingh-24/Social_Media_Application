@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}Search{% endblock %}
+
+{% block content %}
+<header class="navbar">
+
+    <a href="/" class="brand">
+        <div class="brand-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 3c-3 0-5 2-5 4s2 4 5 4 5 2 5 4-2 4-5 4" />
+                <circle cx="8" cy="7" r="1.5" fill="currentColor" />
+                <circle cx="16" cy="17" r="1.5" fill="currentColor" />
+            </svg>
+        </div>
+        <span class="brand-name">Synapse</span>
+    </a>
+
+    <form action="{% url 'user-search' %}" method="GET" class="global-search">
+        <input
+            type="text"
+            name="q"
+            placeholder="Search users..."
+            value="{{ request.GET.q }}"
+            autocomplete="off">
+    </form>
+
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle Theme">
+        <i data-lucide="sun"></i>
+    </button>
+
+</header>
+
+
+ <!-- ================= SIDEBAR ================= -->
+    <div class="icon-sidebar">
+
+        <a href="/">
+            <i class="fa-solid fa-house"></i>
+        </a>
+
+        <a href="/messages/">
+            <i class="fa-regular fa-paper-plane"></i>
+        </a>
+
+        <a href="{% url 'user-search' %}">
+            <i class="fa-solid fa-magnifying-glass"></i>
+        </a>
+
+        <a href="{% url 'create-post' %}">
+            <i class="fa-regular fa-square-plus"></i>
+        </a>
+
+        <a href="{% url 'user-profile' request.user.username %}">
+            {% if request.user.profile_picture %}
+                <img src="{{ request.user.profile_picture.url }}" class="sidebar-avatar">
+            {% else %}
+                <div class="sidebar-avatar placeholder"></div>
+            {% endif %}
+        </a>
+
+    </div>
+
+<div class="search-container">
+
+    <h2 class="search-title">
+        {% if query %}
+            Results for "{{ query }}"
+        {% else %}
+            Search users
+        {% endif %}
+    </h2>
+
+    {% if results %}
+
+        <div class="search-results">
+
+            {% for user in results %}
+            <div class="user-card">
+
+                <!-- LEFT: PROFILE -->
+                <a href="{% url 'user-profile' user.username %}" class="user-info">
+
+                    <img
+                        src="{{ user.profile_picture.url }}"
+                        class="user-avatar"
+                        alt="{{ user.username }}"
+                    >
+
+                    <div class="user-meta">
+                        <div class="username">
+                            {{ user.username }}
+                        </div>
+
+                        {% if user.bio %}
+                        <div class="bio">
+                            {{ user.bio|truncatechars:60 }}
+                        </div>
+                        {% endif %}
+
+                    </div>
+                </a>
+
+                <!-- RIGHT: FOLLOW BUTTON -->
+                <div class="follow-action">
+
+                    {% if user.is_following %}
+                        <a href="{% url 'unfollow-user' user.id %}" class="follow-btn following">
+                            Following
+                        </a>
+                    {% else %}
+                        <a href="{% url 'follow-user' user.id %}" class="follow-btn">
+                            Follow
+                        </a>
+                    {% endif %}
+
+                </div>
+
+            </div>
+            {% endfor %}
+
+        </div>
+
+    {% elif query %}
+        <p class="empty-state">No users found.</p>
+    {% endif %}
+
+</div>
+
+{% endblock %}

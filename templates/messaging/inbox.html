@@ -5,25 +5,12 @@
        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     </head>
 <body>
+    
 <div class="messages-layout">
 
     <!-- ICON SIDEBAR -->
-    <div class="icon-sidebar">
-        <a href="/"><i class="fa-solid fa-house"></i></a>
-        <a href="/messages/"><i class="fa-regular fa-paper-plane"></i></a>
-         <a href="#" title="Search">
-            <i class="fa-solid fa-magnifying-glass"></i>
-        </a>
-        <a href="#" title="Create">
-            <i class="fa-regular fa-square-plus"></i>
-        </a>
-        <a href="{% url 'user-profile' request.user.username %}">{% if user.profile_picture %}
-            <img src="{{ user.profile_picture.url }}" class="chat-avatar">
-        {% else %}
-            <img src="{% static 'images/default-avatar.png' %}" class="chat-avatar">
-        {% endif %}</a>
+    {% include "includes/icon_sidebar.html" %}
 
-    </div>
 
 
     <!-- CONVERSATION LIST -->
@@ -67,8 +54,18 @@
 
     <!-- EMPTY CHAT AREA -->
     <div class="chat-window">
+        <div class="search">
+        <form action="{% url 'user-search' %}" method="GET" class="global-search">
+        <input
+            type="text"
+            name="q"
+            placeholder="Search users..."
+            value="{{ request.GET.q }}"
+            autocomplete="off">
+    </form></div>
         <div class="messages-area"
              style="display:flex;align-items:center;justify-content:center;">
+             
              <i class="fa-solid fa-paper-plane"></i>
             <h2>Select a conversation</h2>
         </div>

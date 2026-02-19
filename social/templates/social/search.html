@@ -1,0 +1,12 @@
+<form method="get">
+  <input type="text" name="q" placeholder="Search users" value="{{ query }}">
+  <button type="submit">Search</button>
+</form>
+
+{% for user in users %}
+  <p>{{ user.username }}</p>
+{% empty %}
+  {% if query %}
+    <p>No users found</p>
+  {% endif %}
+{% endfor %}

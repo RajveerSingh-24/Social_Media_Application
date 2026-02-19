@@ -27,6 +27,8 @@ INSTALLED_APPS = [
     'users',
     'axes',
     'messaging',
+    'social',
+    'posts',
 ]
 
 AUTH_USER_MODEL = 'users.User'

@@ -1,136 +1,195 @@
 {% extends "base.html" %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+{% load static %}
+ 
 {% block title %}{{ user_obj.username }}{% endblock %}
 
 {% block content %}
-<div class="profile-wrapper">
+<header class="navbar">
 
-    <div class="profile-card">
+    <a href="/" class="brand">
+        <div class="brand-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 3c-3 0-5 2-5 4s2 4 5 4 5 2 5 4-2 4-5 4" />
+                <circle cx="8" cy="7" r="1.5" fill="currentColor" />
+                <circle cx="16" cy="17" r="1.5" fill="currentColor" />
+            </svg>
+        </div>
+        <span class="brand-name">Synapse</span>
+    </a>
 
-        <!-- HEADER -->
-        <div class="profile-header">
+    <form action="{% url 'user-search' %}" method="GET" class="global-search">
+        <input
+            type="text"
+            name="q"
+            placeholder="Search users..."
+            value="{{ request.GET.q }}"
+            autocomplete="off">
+    </form>
 
-            <!-- Avatar -->
-            <div class="profile-avatar">
-                {% if user_obj.profile_picture %}
-                <img src="{{ user_obj.profile_picture.url }}" alt="Profile Picture">
-                {% else %}
-                <div class="avatar-placeholder"></div>
-                {% endif %}
-            </div>
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle Theme">
+        <i data-lucide="sun"></i>
+    </button>
+
+</header>
+<div class="app-layout">
+
+    <!-- ================= SIDEBAR ================= -->
+    <div class="icon-sidebar">
+
+        <a href="/">
+            <i class="fa-solid fa-house"></i>
+        </a>
+
+        <a href="/messages/">
+            <i class="fa-regular fa-paper-plane"></i>
+        </a>
+
+        <a href="{% url 'user-search' %}">
+            <i class="fa-solid fa-magnifying-glass"></i>
+        </a>
+
+        <a href="{% url 'create-post' %}">
+            <i class="fa-regular fa-square-plus"></i>
+        </a>
 
 
-            <!-- Info -->
-            <div class="profile-info">
+        <a href="{% url 'user-profile' request.user.username %}">
+            {% if request.user.profile_picture %}
+                <img src="{{ request.user.profile_picture.url }}" class="sidebar-avatar">
+            {% else %}
+                <div class="sidebar-avatar placeholder"></div>
+            {% endif %}
+        </a>
 
-                <div class="profile-top">
-                    <h2>
-                        {{ user_obj.username }}
-                        {% if user_obj.is_verified %}
-                        <span class="verified-badge">✔</span>
+    </div>
+    <!-- ================= END SIDEBAR ================= -->
+
+<div class="main-content">
+    <!-- ================= PROFILE AREA ================= -->
+    <div class="profile-page-area">
+
+        <div class="profile-wrapper">
+
+            <div class="profile-card">
+
+                <!-- HEADER -->
+                <div class="profile-header">
+
+                    <div class="profile-avatar">
+                        {% if user_obj.profile_picture %}
+                        <img src="{{ user_obj.profile_picture.url }}">
+                        {% else %}
+                        <div class="avatar-placeholder"></div>
                         {% endif %}
-                    </h2>
+                    </div>
 
-                    {% if user.is_authenticated %}
-                    {% if not is_self %}
-                    {% if is_following %}
-                    <a href="{% url 'unfollow-user' user_obj.id %}" class="btn secondary">
-                        Unfollow
-                    </a>
-                    {% else %}
-                    <a href="{% url 'follow-user' user_obj.id %}" class="btn primary">
-                        Follow
-                    </a>
-                    {% endif %}
-                    {% else %}
-                    <a href="{% url 'edit-profile' %}" class="btn secondary">Edit Profile</a>
-                    <a href="{% url 'logout' %}" class="btn danger">Logout</a>
-                    {% endif %}
-                    {% endif %}
+                    <div class="profile-info">
+
+                        <div class="profile-top">
+                            <h2>
+                                {{ user_obj.username }}
+                                {% if user_obj.is_verified %}
+                                <span class="verified-badge">✔</span>
+                                {% endif %}
+                            </h2>
+
+                            {% if user.is_authenticated %}
+                                {% if not is_self %}
+                                    {% if is_following %}
+                                        <a href="{% url 'unfollow-user' user_obj.id %}" class="btn secondary">
+                                            Unfollow
+                                        </a>
+                                    {% else %}
+                                        <a href="{% url 'follow-user' user_obj.id %}" class="btn primary">
+                                            Follow
+                                        </a>
+                                    {% endif %}
+                                {% else %}
+                                    <a href="{% url 'edit-profile' %}" class="btn secondary">Edit Profile</a>
+                                    <a href="{% url 'logout' %}" class="btn danger">Logout</a>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+
+                        <!-- STATS -->
+                        <div class="profile-stats">
+
+                            <div class=" stat-link">
+                                <strong>{{ posts|length }}</strong>
+                                <span>Posts</span>
+                            </div>
+
+                            <a href="{% url 'followers-list' user_obj.username %}" class="stat-link">
+                                <strong>{{ user_obj.followers_count }}</strong>
+                                <span>Followers</span>
+                            </a>
+
+                            <a href="{% url 'following-list' user_obj.username %}" class="stat-link">
+                                <strong>{{ user_obj.following_count }}</strong>
+                                <span>Following</span>
+                            </a>
+
+                        </div>
+
+                        <div class="profile-bio">
+                            {{ user_obj.bio|default:"No bio yet." }}
+                        </div>
+
+                    </div>
                 </div>
 
-                <!-- Stats -->
-                <div class="profile-stats">
-                    <div>
-                        <strong>0</strong>
-                        <span>Posts</span>
-                    </div>
+                <!-- TABS -->
+                <div class="profile-tabs">
+                    <button class="tab active" onclick="switchTab(event,'posts')">Posts</button>
+                    <button class="tab" onclick="switchTab(event,'saved')">Saved</button>
+                    <button class="tab" onclick="switchTab(event,'tagged')">Tagged</button>
+                </div>
 
-                    <div onclick="openFollowers()" class="clickable">
-                        <strong>{{ user_obj.followers_count }}</strong>
-                        <span>Followers</span>
-                    </div>
-
-                    <div onclick="openFollowing()" class="clickable">
-                        <strong>{{ user_obj.following_count }}</strong>
-                        <span>Following</span>
+                <!-- POSTS -->
+                <div id="posts" class="tab-content active">
+                    <div class="posts-grid">
+                        {% for post in posts %}
+                            <a href="{% url 'post-detail' post.id %}" class="post-item">
+                                <img src="{{ post.image.url }}" class="post-image">
+                            </a>
+                        {% empty %}
+                            <p class="empty-text">No posts yet.</p>
+                        {% endfor %}
                     </div>
                 </div>
 
-                <div class="profile-bio">
-                    {{ user_obj.bio|default:"No bio yet." }}
+                <div id="saved" class="tab-content">
+                    <p class="empty-text">No saved posts yet.</p>
+                </div>
+
+                <div id="tagged" class="tab-content">
+                    <p class="empty-text">No tagged posts.</p>
                 </div>
 
             </div>
-        </div>
 
-        <!-- TABS -->
-        <div class="profile-tabs">
-            <button class="tab active" onclick="switchTab('posts')">Posts</button>
-            <button class="tab" onclick="switchTab('saved')">Saved</button>
-            <button class="tab" onclick="switchTab('tagged')">Tagged</button>
-        </div>
-
-        <!-- POSTS GRID -->
-        <div id="posts" class="tab-content active">
-            <div class="posts-grid">
-                {% for i in "123456789" %}
-                <div class="post-item"></div>
-                {% endfor %}
-            </div>
-        </div>
-
-        <div id="saved" class="tab-content">
-            <p class="empty-text">No saved posts yet.</p>
-        </div>
-
-        <div id="tagged" class="tab-content">
-            <p class="empty-text">No tagged posts.</p>
         </div>
 
     </div>
 </div>
-
-
-<!-- FOLLOWERS MODAL -->
-<div id="followersModal" class="modal">
-    <div class="modal-content">
-        <h3>Followers</h3>
-        <p>Follower list will go here.</p>
-        <button onclick="closeModal()">Close</button>
-    </div>
 </div>
 
 
 <script>
-    function switchTab(tabId) {
-        document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
-        document.querySelectorAll(".tab-content").forEach(content => content.classList.remove("active"));
+function switchTab(event, tabId) {
+    document.querySelectorAll(".tab").forEach(tab =>
+        tab.classList.remove("active")
+    );
 
-        document.getElementById(tabId).classList.add("active");
-        event.target.classList.add("active");
-    }
+    document.querySelectorAll(".tab-content").forEach(content =>
+        content.classList.remove("active")
+    );
 
-    function openFollowers() {
-        document.getElementById("followersModal").classList.add("show");
-    }
-
-    function openFollowing() {
-        document.getElementById("followersModal").classList.add("show");
-    }
-
-    function closeModal() {
-        document.getElementById("followersModal").classList.remove("show");
-    }
+    document.getElementById(tabId).classList.add("active");
+    event.currentTarget.classList.add("active");
+}
 </script>
 
 {% endblock %}

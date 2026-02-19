@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Post{% endblock %}
+
+{% block content %}
+
+<div class="post-detail-container">
+
+    <div class="post-detail-card">
+
+        <!-- LEFT IMAGE -->
+        <div class="post-image-section">
+            <img src="{{ post.image.url }}" alt="post">
+        </div>
+
+        <!-- RIGHT INFO -->
+        <div class="post-info-section">
+
+            <div class="post-author">
+                <a href="{% url 'user-profile' post.user.username %}">
+                    <strong>{{ post.user.username }}</strong>
+                </a>
+            </div>
+
+            <div class="post-caption">
+                <strong>{{ post.user.username }}</strong>
+                {{ post.caption }}
+            </div>
+
+
+            <div class="post-date">
+                {{ post.created_at|date:"M d, Y" }}
+            </div>
+              <form action="{% url 'toggle-like' post.id %}" method="POST">
+                {% csrf_token %}
+                
+                     <div class="like-section">
+
+                        <button class="like-btn"
+                                data-post-id="{{ post.id }}"
+                                type="button">
+
+                            <i class="{% if post.is_liked %}
+                                fa-solid fa-heart liked
+                            {% else %}
+                                fa-regular fa-heart
+                            {% endif %}">
+                            </i>
+
+                        </button>
+
+                        <span class="like-count">
+                            {{ post.likes.count }}
+                        </span>
+
+                    </div>
+
+
+
+
+
+            </form>
+
+            <div class="comments-section">
+
+                {% for comment in comments %}
+                    <div class="comment">
+                        <strong>{{ comment.user.username }}</strong>
+                        {{ comment.text }}
+                    </div>
+                {% empty %}
+                    <p class="empty-text">No comments yet.</p>
+                {% endfor %}
+
+            </div>
+
+            <form action="{% url 'add-comment' post.id %}" method="POST" class="comment-form">
+                {% csrf_token %}
+                {{ form.text }}
+            </form>
+
+            <div class="post-header">
+                {% if request.user == post.user %}
+            <div class="post-menu">
+                <form method="POST" action="{% url 'delete_post' post.id %}"
+                    onsubmit="return confirm('Delete this post?');">
+                    {% csrf_token %}
+                    <button type="submit" class="delete-btn">
+                        <i class="fa-solid fa-ellipsis"></i>
+                    </button>
+                </form>
+            </div>
+                {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    document.querySelectorAll(".like-btn").forEach(button => {
+
+        button.addEventListener("click", function () {
+
+            const postId = this.dataset.postId;
+            const icon = this.querySelector("i");
+            const likeCountEl = this.nextElementSibling;
+
+            fetch(`/posts/${postId}/like/`, {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}",
+                    "X-Requested-With": "XMLHttpRequest",
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+
+                likeCountEl.innerText = data.likes_count;
+
+                if (data.liked) {
+                    icon.classList.remove("fa-regular");
+                    icon.classList.add("fa-solid", "liked");
+                } else {
+                    icon.classList.remove("fa-solid", "liked");
+                    icon.classList.add("fa-regular");
+                }
+
+            });
+
+        });
+
+    });
+
+});
+</script>
+
+
+{% endblock %}

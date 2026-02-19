@@ -6,108 +6,65 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Synapse{% endblock %}</title>
+
     <link rel="stylesheet" href="https://unpkg.com/cropperjs/dist/cropper.css" />
+
+    <script>
+        if (localStorage.getItem("theme") === "dark") {
+            document.documentElement.classList.add("dark-mode");
+        }
+    </script>
 
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 
 <body>
 
-    <!-- ================= NAVBAR ================= -->
 
-    <header class="navbar">
-
-        <a href="/" class="brand">
-            <div class="brand-icon">
-                <!-- Clean Synapse SVG -->
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
-                    stroke-linejoin="round">
-                    <path d="M16 3c-3 0-5 2-5 4s2 4 5 4 5 2 5 4-2 4-5 4" />
-                    <circle cx="8" cy="7" r="1.5" fill="currentColor" />
-                    <circle cx="16" cy="17" r="1.5" fill="currentColor" />
-                </svg>
-            </div>
-            <span class="brand-name">Synapse</span>
-        </a>
-
-        <!-- Theme Toggle -->
-        <button class="theme-toggle" id="themeToggle" aria-label="Toggle Theme">
-            <i data-lucide="sun"></i>
-        </button>
-
-    </header>
+<!-- ================= NAVBAR ================= -->
 
 
-    <!-- ================= LOGOUT MODAL ================= -->
 
-    {% if request.session.just_logged_out %}
-    <div class="logout-modal" id="logoutModal">
-        <div class="logout-box">
-            <div class="logout-icon">
-                ✓
-            </div>
-            <h3>You’ve been logged out</h3>
-            <p>Your session ended successfully.</p>
-            <button onclick="closeLogoutModal()">Log in again</button>
-        </div>
-    </div>
-    {% endif %}
+<!-- ================= CONTENT ================= -->
 
+{% block content %}
+{% endblock %}
 
-    <!-- ================= PAGE CONTENT ================= -->
+<!-- ================= SCRIPTS ================= -->
 
-    {% block content %}
-    {% endblock %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
 
+    lucide.createIcons();
 
-    <!-- ================= SCRIPTS ================= -->
+    const themeToggle = document.getElementById("themeToggle");
 
-    <script>
+    function applyTheme(theme) {
+        if (theme === "dark") {
+            document.body.classList.add("dark-mode");
+            themeToggle.innerHTML = '<i data-lucide="moon"></i>';
+        } else {
+            document.body.classList.remove("dark-mode");
+            themeToggle.innerHTML = '<i data-lucide="sun"></i>';
+        }
+
+        localStorage.setItem("theme", theme);
         lucide.createIcons();
+    }
 
-        const themeToggle = document.getElementById("themeToggle");
+    applyTheme(localStorage.getItem("theme") || "light");
 
-        function applyTheme(theme) {
-            if (theme === "dark") {
-                document.body.classList.add("dark-mode");
-                themeToggle.innerHTML = '<i data-lucide="moon"></i>';
-            } else {
-                document.body.classList.remove("dark-mode");
-                themeToggle.innerHTML = '<i data-lucide="sun"></i>';
-            }
-            localStorage.setItem("theme", theme);
-            lucide.createIcons();
-        }
+    themeToggle?.addEventListener("click", () => {
+        const isDark = document.body.classList.contains("dark-mode");
+        applyTheme(isDark ? "light" : "dark");
+    });
+});
+</script>
 
-        themeToggle.addEventListener("click", () => {
-            const isDark = document.body.classList.contains("dark-mode");
-            applyTheme(isDark ? "light" : "dark");
-        });
-
-        // Load saved theme
-        const savedTheme = localStorage.getItem("theme") || "light";
-        applyTheme(savedTheme);
-    </script>
-
-
-    <!-- Logout Modal Script -->
-    <script>
-        function closeLogoutModal() {
-            const modal = document.getElementById("logoutModal");
-            if (modal) {
-                modal.style.opacity = "0";
-                setTimeout(() => modal.remove(), 250);
-            }
-        }
-
-        // Auto close after 3 seconds
-        setTimeout(closeLogoutModal, 3000);
-    </script>
-
-    <script src="https://unpkg.com/cropperjs/dist/cropper.js"></script>
+<script src="https://unpkg.com/cropperjs/dist/cropper.js"></script>
 
 
 </body>
-
 </html>

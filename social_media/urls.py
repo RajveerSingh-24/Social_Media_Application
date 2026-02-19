@@ -20,13 +20,17 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from users.views import public_profile_view
+from posts.views import home_feed
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     # Authentication routes 
+    path("", home_feed, name="home"),
     path('accounts/', include('users.urls')),
     path('messages/', include('messaging.urls')),
     path('u/<str:username>/', public_profile_view, name='user-profile'),
+    path('social/', include('social.urls')),
+    path('posts/', include('posts.urls')),
 ]
 
 # Media files (development only)

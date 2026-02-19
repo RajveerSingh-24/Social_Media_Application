@@ -13,16 +13,10 @@ class User(AbstractUser):
     blank=True,
     null=True
 )
+    followers_count = models.PositiveIntegerField(default=0)
+    following_count = models.PositiveIntegerField(default=0)
 
 
-    following = models.ManyToManyField(
-        'self',
-        symmetrical=False,
-        related_name='followers',
-        through='Follow',
-        through_fields=('follower', 'following'),
-        blank=True
-    )
 
     is_2fa_enabled = models.BooleanField(default=False)
     otp_secret = models.CharField(max_length=32, blank=True, null=True)
