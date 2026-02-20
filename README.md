@@ -62,18 +62,25 @@ git clone https://github.com/YOUR-USERNAME/social-media.git
 cd social-media
 ```
 ### 2️⃣ Create Virtual Environment
+
 ```bash
 python -m venv venv
 ```
+
 Activate environment:
+
 ```bash
 venv\Scripts\activate
 ```
+
 ### 3️⃣ Install Dependencies
+
 ```bash
 pip install -r requirements.txt
 ```
+
 ### 4️⃣ Create .env File
+
 ```bash
 SECRET_KEY=your_secret_key_here
 DEBUG=True
@@ -87,28 +94,40 @@ DB_PORT=3306
 EMAIL_HOST_USER=your_email@gmail.com
 EMAIL_HOST_PASSWORD=your_app_password
 ```
+
 ### 5️⃣ Configure MySQL Database
+
 Open MySQL and run:
+
 ```bash
 CREATE DATABASE social_media_db;
 ```
+
 ### 6️⃣ Apply Migrations
+
 ```bash
 python manage.py makemigrations
 python manage.py migrate
 ```
+
 ### 7️⃣ Create Superuser (Optional)
+
 ```bash
 python manage.py createsuperuser
 ```
+
 ### 8️⃣ Run Development Server
+
 ```bash
 python manage.py runserver
 ```
+
 Open in browser:
+
 ```bash
 http://127.0.0.1:8000/
 ```
+
 ---
 ## 📂 Project Structure (Simplified)
 social_media/
