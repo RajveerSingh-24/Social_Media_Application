@@ -130,6 +130,8 @@ http://127.0.0.1:8000/
 
 ---
 ## 📂 Project Structure (Simplified)
+
+```bash
 social_media/
 │
 ├── users/        → authentication & profiles
@@ -138,6 +140,7 @@ social_media/
 ├── templates/    → UI templates
 ├── static/       → CSS & assets
 └── manage.py
+```
 ---
 ## 🔒 Security Highlights
 - Email activation required before login
