@@ -109,9 +109,7 @@
                 {{ post.caption }}
             </div>
             {% endif %}
-
-        </div>
-        <div class="feed-comments-preview">
+            <div class="feed-comments-preview">
             {% for comment in post.comments.all|slice:":2" %}
                 <div class="comment">
                     <strong>{{ comment.user.username }}</strong>
@@ -125,6 +123,9 @@
                 </a>
             {% endif %}
         </div>
+
+        </div>
+        
 
     {% empty %}
         <p class="empty-text">Follow users to see posts.</p>
