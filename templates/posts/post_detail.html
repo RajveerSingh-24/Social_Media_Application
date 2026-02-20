@@ -77,7 +77,12 @@
 
             <form action="{% url 'add-comment' post.id %}" method="POST" class="comment-form">
                 {% csrf_token %}
+
                 {{ form.text }}
+
+                <button type="submit" class="comment-submit" disabled>
+                    Post
+                </button>
             </form>
 
             <div class="post-header">
@@ -139,5 +144,18 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 </script>
 
+<script>
+document.addEventListener("DOMContentLoaded", function () {
 
+    const input = document.querySelector(".comment-input");
+    const button = document.querySelector(".comment-submit");
+
+    if (input && button) {
+        input.addEventListener("input", function () {
+            button.disabled = input.value.trim().length === 0;
+        });
+    }
+
+});
+</script>
 {% endblock %}

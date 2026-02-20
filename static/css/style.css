@@ -1427,3 +1427,49 @@ input[type="file"] {
     align-items: center;
     gap: 8px;              /* space between heart & number */
 }
+
+/* COMMENT FORM */
+.comment-form {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-top: 1px solid #eee;
+    padding-top: 12px;
+    margin-top: 12px;
+}
+
+/* input */
+.comment-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 14px;
+    background: transparent;
+    padding: 8px 0;
+}
+
+/* PREMIUM POST BUTTON */
+.comment-submit {
+    border: none;
+    background: linear-gradient(135deg, #0095f6, #1877f2);
+    color: white;
+    font-weight: 600;
+    font-size: 13px;
+    padding: 7px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+/* hover */
+.comment-submit:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+/* disabled state */
+.comment-submit:disabled {
+    background: #c7c7c7;
+    cursor: not-allowed;
+    box-shadow: none;
+}

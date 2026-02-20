@@ -111,6 +111,20 @@
             {% endif %}
 
         </div>
+        <div class="feed-comments-preview">
+            {% for comment in post.comments.all|slice:":2" %}
+                <div class="comment">
+                    <strong>{{ comment.user.username }}</strong>
+                    {{ comment.text }}
+                </div>
+            {% endfor %}
+
+            {% if post.comments.count > 2 %}
+                <a href="{% url 'post-detail' post.id %}" class="view-comments">
+                    View all {{ post.comments.count }} comments
+                </a>
+            {% endif %}
+        </div>
 
     {% empty %}
         <p class="empty-text">Follow users to see posts.</p>

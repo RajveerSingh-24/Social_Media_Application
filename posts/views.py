@@ -32,7 +32,9 @@ def create_post(request):
         "form": form
     })
 
+@login_required
 def post_detail(request, post_id):
+
     post = get_object_or_404(Post, id=post_id)
 
     post.is_liked = Like.objects.filter(
@@ -40,8 +42,14 @@ def post_detail(request, post_id):
         post=post
     ).exists()
 
+    comments = post.comments.select_related("user")
+
+    form = CommentForm()
+
     return render(request, "posts/post_detail.html", {
-        "post": post
+        "post": post,
+        "comments": comments,
+        "form": form
     })
 
 
@@ -86,21 +94,16 @@ def add_comment(request, post_id):
 
     return redirect("post-detail", post_id=post.id)
 
+@login_required
 def home_feed(request):
-    posts = Post.objects.select_related("user").all().order_by("-created_at")
 
-    # attach liked state to each post
-    if request.user.is_authenticated:
-        liked_posts = set(
-            Like.objects.filter(user=request.user)
-            .values_list("post_id", flat=True)
-        )
+    posts = Post.objects.all().select_related("user")
 
-        for post in posts:
-            post.is_liked = post.id in liked_posts
-    else:
-        for post in posts:
-            post.is_liked = False
+    for post in posts:
+        post.is_liked = Like.objects.filter(
+            user=request.user,
+            post=post
+        ).exists()
 
     return render(request, "posts/home_feed.html", {
         "posts": posts
@@ -123,3 +126,19 @@ def delete_post(request, post_id):
 
     # fallback safety
     return redirect("public_profile", username=post.user.username)
+
+@login_required
+def add_comment(request, post_id):
+
+    post = get_object_or_404(Post, id=post_id)
+
+    if request.method == "POST":
+        form = CommentForm(request.POST)
+
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.user = request.user
+            comment.post = post
+            comment.save()
+
+    return redirect("post-detail", post_id=post.id)

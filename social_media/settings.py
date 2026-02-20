@@ -81,6 +81,7 @@ DATABASES = {
     }
 }
 
+
 # ---------------- AUTHENTICATION ----------------
 
 AUTHENTICATION_BACKENDS = [
