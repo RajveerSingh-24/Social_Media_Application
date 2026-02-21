@@ -58,7 +58,7 @@ It is designed as an industry-level portfolio project demonstrating backend arch
 ### 1️⃣ Clone Repository
 
 ```bash
-git clone https://github.com/YOUR-USERNAME/social-media.git
+git clone https://github.com/username/Social_Media_Application.git
 cd social-media
 ```
 ### 2️⃣ Create Virtual Environment
