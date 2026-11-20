@@ -160,4 +160,4 @@ social_media/
 Rajveer Singh
 B.Tech Computer Science Engineering (AI and ML) — 3rd Year
 
-Portfolio Project — Django Social Media SaaS
+Portfolio Project — Django Social Media SaaS.
